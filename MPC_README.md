@@ -30,7 +30,7 @@ Self-Driving Car Engineer Nanodegree Program
 
 ## MPC Design and Implementation
 
-### System Model
+### Architecture
 
 * All computation is performed at the car-centered local coordinate system.  The map global view points are transformed to that local coordinate system.
 * A third-order polynomial is used to model the road curves.  The simulator sends six road view points, which could used to compute the polynomial coefficients.
@@ -39,8 +39,21 @@ Self-Driving Car Engineer Nanodegree Program
  2. minimize the use of actuators
  3. minimize the value gap between sequential actuation
 * The different weights are applied for the above errors
-* The constrains follow the car kinetic model
+* The constrains follow the car kinematic model as following
 * Adding the limitations for steering angle and acceleration
+
+
+### kinematic model
+
+The kinematic model includes four state variables as the vehicle position x(t) and y(t), the vehicle heading ψ(t), and the vehicle velocity v(t).  In addition, there are two actuators a(t), and δ(t).  There two corresponds to the acceleration and steering angle respectively. 
+
+Now we’ve developed equations to determine the next state (state at t+1) from our state vector at t and our actuator values. Note that we’ve added a variable to our state called L, which measures the distance between the front of the vehicle and its center of gravity. The larger the vehicle , the slower the turn rate.
+
+x(t+1) = x(t) + v(t) * cos(ψ(t)) * dt   
+y(t+1) = y(t) + v(t) * sin(ψ(t)) * dt  
+ψ(t+1) = ψ(t) + v(t) / L * δ(t)∗dt   
+v(t+1) = v(t) + a(t) * dt   
+
 
 ### Parameter Tuning
 
