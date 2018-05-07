@@ -9,6 +9,9 @@
 #include "MPC.h"
 #include "json.hpp"
 
+#define LATENCY_COMP 
+//#undef LATENCY_COMP
+
 // for convenience
 using json = nlohmann::json;
 
@@ -91,6 +94,8 @@ int main() {
           double py = j[1]["y"];
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
+          double steer_value = j[1]["steering_angle"];
+          double throttle_value = j[1]["throttle"];
 
           for (uint indx = 0; indx < ptsx.size(); indx ++) {
             double shift_x = ptsx[indx] - px;
@@ -112,11 +117,28 @@ int main() {
           double cte = polyeval(coeffs, 0);
           double epsi = -atan(coeffs[1]);
 
-          //double steer_value    = j[1]["steering_angle"];
-          // double throttle_value = j[1]["throttle"];
+          double Lf = 2.67;  // the length from front to CoG, a parameter deciced by the car physics
 
+#ifdef LATENCY_COMP
+          // do the delay compensation
+          double latency = 0.05;
+
+          steer_value *= -1;
+          psi = steer_value; // in coordinate now, so use steering angle to predict x and y
+          px = v*cos(psi)*latency; 
+          py = v*sin(psi)*latency;
+          
+          cte= cte + v*sin(psi)*latency;
+          epsi = epsi + v*steer_value*latency/Lf;
+          psi = psi + v*steer_value*latency/Lf;
+          v = v + throttle_value*latency;
+#else
+          px = 0.0;
+          py = 0.0;
+          psi = 0.0;
+#endif          
           Eigen::VectorXd state(6);
-          state << 0, 0, 0, v, cte, epsi;
+          state << px, py, psi, v, cte, epsi;
           auto vars = mpc.Solve(state, coeffs);
 
           //Display the waypoints/reference line
@@ -143,7 +165,7 @@ int main() {
             }
           }
 
-          double Lf = 2.67;  // the length from front to CoG, a parameter deciced by the car physics
+          
 
           json msgJson;
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system

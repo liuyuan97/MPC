@@ -70,8 +70,8 @@ This is clear that dt = 0.1 definitely gives the better performance.
 
 ### Additional System Latency
 
-Another 100ms latency is added to simulate the system command delay which could happen at the real vehicle.  However, above N=20, and dt=0.1 MPC does not give good results as shown in this [video](latency.mp4). The car has more swings, and finally leaves the road.
+Another 100ms latency is added to simulate the system command delay which could happen at the real vehicle.  However, above N=00, and dt=0.1 MPC does not give good results as shown in this [video](latency.mp4). The car has more swings, and finally leaves the road.
 
-This is clear that adding addition system latency cause the system more difficult to control.  The previous MPC method fails.  In order to make the car easy to control, we reduce the reference velocity from 25 mph to 20 mph.  Also, we reduce N from 20 to 10.  Making N smaller forces MPC to more focus on the near side, which could compensate the system latency.  After that, the car could successfully complete the whole loop as shown in this [video](final.mp4).
+This is clear that adding addition system latency cause the system more difficult to control.  The previous MPC method fails.  One solution we could use is to send the car correct command that are meant for the time stamp after that latency time.  Thus, in the code, we compute the state value after the latency time, and use them in the MPC  solve function.  After that, the car could successfully complete the whole loop as shown in this [video](final.mp4).
 
 

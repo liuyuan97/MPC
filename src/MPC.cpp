@@ -22,7 +22,7 @@ double dt = 0.1;
 const double Lf = 2.67;
 
 // reference values
-double ref_v = 40;
+double ref_v = 70;
 double ref_cte = 0;
 double ref_epsi = 0;
 
